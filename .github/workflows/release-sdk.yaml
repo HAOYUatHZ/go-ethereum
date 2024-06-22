@@ -1,0 +1,37 @@
+name: Release SDK
+
+on:
+    workflow_dispatch:
+        inputs:
+          REV:
+            description: "can be commit hash or tag"
+            required: true
+            type: string
+
+jobs:
+  release-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.REV }}
+      - name: Repalce import path
+        run: |
+          set -euo pipefail
+          # replace import path for *.go, go.mod and *.txt
+          find . -type f \( -name "*.go" -o -name "go.mod" -o -name "*.txt" \) -exec sed -i '' 's|github.com/ethereum/go-ethereum|github.com/scroll-tech/go-ethereum|g' {} +
+    #   - uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a
+    #     with:
+    #       skip_fetch: true # already did fetch in check diff
+    #       file_pattern: "*"
+    #       commit_message: "chore: replace import path [bot]"
+      - name: Create branch and push
+        run: |
+            git checkout -b ${{ env.SDK_NAME }}
+            git add .
+            git commit -m "chore: replace import path [bot]"
+            git push origin ${{ env.SDK_NAME }}
+        env:
+            SDK_NAME: sdk-${{ github.event.inputs.REV }}
+
