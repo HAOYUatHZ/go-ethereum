@@ -19,7 +19,7 @@ package state
 import (
 	"maps"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/scroll-tech/go-ethereum/common"
 	"github.com/holiman/uint256"
 )
 
